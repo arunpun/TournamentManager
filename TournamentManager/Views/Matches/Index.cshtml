@@ -1,0 +1,82 @@
+﻿@model IEnumerable<TournamentManager.Models.Match>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+@if (User.IsInRole("Admin"))
+{
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ScheduledTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Round)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsCompleted)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Score)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TeamA)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TeamB)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Winner)
+            </th>
+            @if (User.IsInRole("Admin"))
+            {
+                <th>
+                    Actions
+                </th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ScheduledTime)
+            </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Round)
+                </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsCompleted)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Score)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TeamA.Name)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.TeamB.Name)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.Winner.Name)
+            </td>
+            @if (User.IsInRole("Admin"))
+            {
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            }
+        </tr>
+}
+    </tbody>
+</table>

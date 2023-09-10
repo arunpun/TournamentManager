@@ -1,0 +1,85 @@
+﻿@model IEnumerable<TournamentManager.Models.Tournament>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+@if (User.IsInRole("Admin"))
+{
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StartTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TeamsSignedUp)
+            </th>
+            <th>
+                Actions
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TeamsSignedUp)
+            </td>
+            <td>
+                @if(User.IsInRole("Admin"))
+                {
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> <span>|</span>
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> <span>|</span>
+                }
+                
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+@section scripts {
+    <script>
+        // Check if a success message exists in TempData
+        var successMessage = "@TempData["SuccessMessage"]";
+
+        // Check if an error message exists in TempData
+        var errorMessage = "@TempData["ErrorMessage"]";
+
+        // Check if an info message exists in TempData
+        var infoMessage = "@TempData["InfoMessage"]";
+
+        // Display a toast message if a success message is present
+        if (successMessage) {
+            toastr.success(successMessage);
+        }
+
+        // Display a toast message if an error message is present
+        if (errorMessage) {
+            toastr.error(errorMessage);
+        }
+
+        // Display a toast message if an info message is present
+        if (infoMessage) {
+            toastr.info(infoMessage);
+        }
+    </script>
+}

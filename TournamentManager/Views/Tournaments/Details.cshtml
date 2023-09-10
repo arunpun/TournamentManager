@@ -1,0 +1,175 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@using System.Text.Json;
+@model TournamentManager.ViewModels.TournamentDetailsViewModel
+@inject SignInManager<AppUser> SignInManager
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Tournament</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Tournament.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Tournament.Name)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Tournament.StartTime)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Tournament.StartTime)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Tournament.TeamsSignedUp)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Tournament.TeamsSignedUp)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Tournament.Matches)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Tournament.Matches.Count)
+        </dd>
+    </dl>
+</div>
+<input type="hidden" id="jsonData" value="@Html.Raw(JsonSerializer.Serialize(Model.BracketData))" />
+<div>
+    @if (SignInManager.IsSignedIn(User))
+    {
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Edit" asp-route-id="@Model?.Tournament.Id">Edit</a> <span>|</span>
+        }
+        else
+        {
+            <a asp-action="SignUp" asp-route-id="@Model.Tournament.Id">Sign Up</a> <span>|</span>
+        }
+    }
+
+    <a asp-action="Index">Back to List</a>
+</div>
+<hr />
+<h4>Bracket</h4>
+<div id="tournamentBracket" class="mt-6"></div>
+
+<style>
+    .g_gracket {
+        width: 100%;
+        background-color: #fff;
+        padding: 55px 15px 5px;
+        line-height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .g_round {
+        float: left;
+        margin-right: 70px;
+    }
+
+    .g_game {
+        position: relative;
+        margin-bottom: 15px;
+    }
+
+    .g_gracket h3 {
+        margin: 0;
+        padding: 10px 8px 8px;
+        font-size: 18px;
+        font-weight: normal;
+        color: #fff
+    }
+
+    .g_team {
+        background: #3597AE;
+    }
+
+        .g_team:last-child {
+            background: #FCB821;
+        }
+
+    .g_round:last-child {
+        margin-right: 20px;
+    }
+
+    .g_winner {
+        background: #444;
+    }
+
+        .g_winner .g_team {
+            background: none;
+        }
+
+    .g_current {
+        cursor: pointer;
+        background: #A0B43C !important;
+    }
+
+    .g_round_label {
+        top: -5px;
+        font-weight: normal;
+        color: #CCC;
+        text-align: center;
+        font-size: 18px;
+    }
+</style>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="/js/jquery.gracket.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var bracketDataJson = @Html.Raw(Json.Serialize(ViewData["BracketData"]));
+
+            // Parse the JSON string into a JavaScript object
+            var bracketData = JSON.parse(bracketDataJson);
+
+            // Check if bracketData is an array
+            if (Array.isArray(bracketData)) {
+                // Modify the property names from "Name" to "name" and "Seed" to "seed"
+                bracketData.forEach(function (roundData) {
+                    roundData.forEach(function (teamData) {
+                        teamData.name = teamData.Name;
+                        teamData.seed = teamData.Seed;
+                        delete teamData.Name;
+                        delete teamData.Seed;
+                    });
+                });
+            } else if (typeof bracketData === 'object') {
+                // Modify the property names directly if it's an object
+                bracketData.name = bracketData.Name;
+                bracketData.seed = bracketData.Seed;
+                delete bracketData.Name;
+                delete bracketData.Seed;
+            }
+
+            $("#tournamentBracket").gracket({
+                src: bracketData,
+                gracketClass: "g_gracket",
+                gameClass: "g_game",
+                roundClass: "g_round",
+                roundLabelClass: "g_round_label",
+                teamClass: "g_team",
+                winnerClass: "g_winner",
+                spacerClass: "g_spacer",
+                currentClass: "g_current",
+                seedClass: "g_seed",
+                cornerRadius: 15,
+                canvasId: "g_canvas",
+                canvasClass: "g_canvas",
+                canvasLineColor: "#eee",
+                canvasLineCap: "round",
+                canvasLineWidth: 2,
+                canvasLineGap: 15,
+            });
+        });
+    </script>
+}
+

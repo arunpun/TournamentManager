@@ -1,0 +1,83 @@
+﻿@model TournamentManager.Models.Team
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+@if (Model == null)
+{
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    Actions
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.Name)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@Model.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    @if (Model.Tournaments.Any())
+    {
+        <h2>Tournaments</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Tournament Name
+                    </th>
+                    <th>
+                        Scheduled Date
+                    </th>
+                    <th>
+                        Number of Teams
+                    </th>
+                    <th>
+                        Actions
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var tournament in Model.Tournaments)
+                {
+                    <tr>
+                        <td>
+                            @tournament.Name
+                        </td>
+                        <td>
+                            @tournament.StartTime.ToString("yyyy-MM-dd HH:mm")
+                        </td>
+                        <td>
+                            @tournament.TeamsSignedUp
+                        </td>
+                        <td>
+                            <a asp-action="Withdraw" asp-controller="Tournaments" asp-route-tournamentId="@tournament.Id">Withdraw</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}
